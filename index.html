@@ -58,7 +58,7 @@ body.hud-mode #hud{max-width:600px;max-height:600px}
 <body>
 <div id="phoneHeader"><h1 style="margin:0">TUNELENS <span style="opacity:.5;font-size:14px">GLASSES HUD</span></h1><p style="opacity:.6;font-size:13px">1. Pair glasses in Meta AI app &gt; 2. Pick the glasses mic below &gt; 3. Tap Open HUD</p></div>
 <div id="hud">
-  <div id="top" class="mono"><span id="topLabel">MIC OFF</span> • <span id="micName">NO MIC SELECTED</span></div>
+  <div id="top" class="mono"><span style="color:#2fe07a">V2</span> • <span id="topLabel">MIC OFF</span> • <span id="micName">NO MIC SELECTED</span></div>
   <div style="text-align:center;font-size:12px;opacity:.6;margin-top:6px">TAP THE GREEN BUTTON ON YOUR PHONE — NOT ON THE LENS</div>
   <div id="idle"><div style="font-size:90px;line-height:1">—</div><p>Play a note</p></div>
   <button id="hudMicBtn">▶ TAP TO START MIC</button>
@@ -125,7 +125,7 @@ async function start(){
   $('alert').style.display='none';
   const ha0=$('hudAlert'); if(ha0) ha0.style.display='none';
   let deviceId=await ensureMicSelected();
-  // If still none, try default mic - don't fail with "Tap Rescan in full view"
+  // If still none, try default mic
   if(!deviceId){
     try{
       const s0=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false},video:false});
