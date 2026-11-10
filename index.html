@@ -49,6 +49,10 @@ select{width:100%;background:#111;color:#fff;border:1px solid #333;border-radius
 body.hud-mode #controls, body.hud-mode #phoneHeader, body.hud-mode #how{display:none}
 body.hud-mode{background:#000}
 body.hud-mode #hud{max-width:600px;max-height:600px}
+#hudMicBtn{display:none}
+body.hud-mode #hudMicBtn{display:block;margin-top:18px;background:#2fe07a;color:#000;border:0;border-radius:999px;padding:16px 28px;font-size:18px;font-weight:800}
+body.hud-mode #hudMicBtn.stop{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.4)}
+#hudAlert{display:none;color:#ffb8b8;font-size:13px;margin-top:10px;text-align:center;max-width:420px}
 #phoneHeader{max-width:640px;margin:0 auto;padding:16px}
 </style>
 </head>
@@ -57,6 +61,8 @@ body.hud-mode #hud{max-width:600px;max-height:600px}
 <div id="hud">
   <div id="top" class="mono"><span id="topLabel">MIC OFF</span> • <span id="micName">NO MIC SELECTED</span></div>
   <div id="idle"><div style="font-size:90px;line-height:1">—</div><p>Play a note</p></div>
+  <button id="hudMicBtn">▶ TAP TO START MIC</button>
+  <div id="hudAlert"></div>
   <div id="locked" style="display:none;width:100%;align-items:center;flex-direction:column">
     <div id="gauge"><svg viewBox="0 0 520 260" style="width:100%;height:100%" preserveAspectRatio="none"><path d="M 20 250 A 240 240 0 0 1 500 250" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="10" stroke-linecap="round"/><path d="M 262 10 A 240 240 0 0 1 340 30" fill="none" stroke="#2fe07a" stroke-width="12"/></svg><div id="ticks"></div><div id="needle"></div><div id="hub"><i></i></div></div>
     <div id="note">A<small>4</small></div>
@@ -114,11 +120,14 @@ async function start(){
     if(!isGlassesLabel(label) && deviceId){ $('alert').textContent='Started, but browser gave you: "'+label+'". That may be the phone mic, not the glasses. Re-pair glasses in Meta AI app, set them as audio output/input in Bluetooth settings, then Rescan and Start again.'; $('alert').style.display='block'; }
     ctx=new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==='suspended') await ctx.resume();
     const src=ctx.createMediaStreamSource(stream); analyser=ctx.createAnalyser(); analyser.fftSize=2048; analyser.smoothingTimeConstant=0.15; src.connect(analyser);
-    running=true; $('micBtn').textContent='■ Stop microphone'; loop();
-  }catch(e){ $('alert').textContent=e.name==='NotAllowedError'?'Mic blocked. Allow mic in browser site settings, then try again.':e.name==='NotFoundError'?'No mic found with that deviceId. Tap Rescan.':'Could not start mic: '+e.message; $('alert').style.display='block'; }
+    running=true; $('micBtn').textContent='■ Stop microphone'; const hb=$('hudMicBtn'); if(hb){ hb.textContent='■ TAP TO STOP MIC'; hb.className='stop'; } const ha=$('hudAlert'); if(ha) ha.style.display='none'; loop();
+  }catch(e){ const msg=e.name==='NotAllowedError'?'Mic blocked. Allow mic in Chrome > Site settings, then tap again.':e.name==='NotFoundError'?'No mic found. Tap Rescan in full view.':'Could not start mic: '+e.message; $('alert').textContent=msg; $('alert').style.display='block'; const ha=$('hudAlert'); if(ha){ ha.textContent=msg; ha.style.display='block'; } }
 }
-function stop(){ cancelAnimationFrame(raf); stream?.getTracks().forEach(t=>t.stop()); stream=null; if(ctx) ctx.close().catch(()=>{}); ctx=null; analyser=null; running=false; $('micBtn').textContent='▶ Start microphone'; $('topLabel').textContent='MIC OFF'; $('idle').style.display='block'; $('locked').style.display='none'; $('needle').style.transform='rotate(-45deg)'; }
+function stop(){ cancelAnimationFrame(raf); stream?.getTracks().forEach(t=>t.stop()); stream=null; if(ctx) ctx.close().catch(()=>{}); ctx=null; analyser=null; running=false; $('micBtn').textContent='▶ Start microphone'; const hb2=$('hudMicBtn'); if(hb2){ hb2.textContent='▶ TAP TO START MIC'; hb2.className=''; } $('topLabel').textContent='MIC OFF'; $('idle').style.display='block'; $('locked').style.display='none'; $('needle').style.transform='rotate(-45deg)'; }
 $('micBtn').onclick=()=> running?stop():start();
+$('hudMicBtn').onclick=()=> running?stop():start();
+// Tapping anywhere on HUD when mic is off also starts it
+$('hud').addEventListener('click', (e)=>{ if(!running && e.target.id!=='hudMicBtn') start(); });
 listMics();
 </script>
 </body>
