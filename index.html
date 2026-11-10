@@ -49,9 +49,8 @@ select{width:100%;background:#111;color:#fff;border:1px solid #333;border-radius
 body.hud-mode #controls, body.hud-mode #phoneHeader, body.hud-mode #how{display:none}
 body.hud-mode{background:#000}
 body.hud-mode #hud{max-width:600px;max-height:600px}
-#hudMicBtn{display:none}
-body.hud-mode #hudMicBtn{display:block;margin-top:18px;background:#2fe07a;color:#000;border:0;border-radius:999px;padding:16px 28px;font-size:18px;font-weight:800}
-body.hud-mode #hudMicBtn.stop{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.4)}
+#hudMicBtn{display:block;position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9999;background:#2fe07a;color:#000;border:3px solid #fff;border-radius:999px;padding:18px 30px;font-size:20px;font-weight:800;white-space:nowrap;box-shadow:0 0 30px rgba(47,224,122,.8)}
+#hudMicBtn.stop{background:#111;color:#fff;border:1px solid rgba(255,255,255,.5);box-shadow:none}
 #hudAlert{display:none;color:#ffb8b8;font-size:13px;margin-top:10px;text-align:center;max-width:420px}
 #phoneHeader{max-width:640px;margin:0 auto;padding:16px}
 </style>
